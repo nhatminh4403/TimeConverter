@@ -1,15 +1,11 @@
-// === CÁC PHẦN TỬ DOM ===
-// Đồng hồ thời gian thực
 const currentClockEl = document.getElementById('currentClock');
 
-// Chuyển đổi đơn lẻ
 const fromTimezoneEl = document.getElementById('fromTimezone');
 const toTimezoneEl = document.getElementById('toTimezone');
 const sourceTimeEl = document.getElementById('sourceTime');
 const sourceDisplayEl = document.getElementById('sourceDisplay');
 const convertedDisplayEl = document.getElementById('convertedDisplay');
 
-// Chuyển đổi khoảng thời gian
 const rangeFromTimezoneEl = document.getElementById('rangeFromTimezone');
 const rangeToTimezoneEl = document.getElementById('rangeToTimezone');
 const startTimeEl = document.getElementById('startTime');
@@ -20,30 +16,14 @@ const rangeConvertedDisplayEl = document.getElementById('rangeConvertedDisplay')
 const durationInfoEl = document.getElementById('durationInfo');
 const timeDifferenceInfoEl = document.getElementById('timeDifferenceInfo');
 
-// Định dạng khác
 const formatGridEl = document.getElementById('formatGrid');
 
-// === CÁC HÀM TIỆN ÍCH ===
-
-/**
- * Phân tích một chuỗi ngày giờ (ví dụ: '2025-07-24', '08:00') trong một múi giờ cụ thể
- * và trả về một đối tượng Date hợp lệ (đại diện cho một thời điểm UTC duy nhất).
- * Đây là hàm cốt lõi để xử lý logic chuyển đổi một cách chính xác.
- * @param {string} dateString - Ngày theo định dạng 'YYYY-MM-DD'.
- * @param {string} timeString - Thời gian theo định dạng 'HH:mm'.
- * @param {string} timeZone - Tên múi giờ IANA (ví dụ: 'America/New_York').
- * @returns {Date} - Đối tượng Date đại diện cho thời điểm chính xác.
- */
 function parseDateTimeInTimezone(dateString, timeString, timeZone) {
     const [year, month, day] = dateString.split('-').map(Number);
     const [hour, minute] = timeString.split(':').map(Number);
 
-    // Bước 1: Tạo một đối tượng Date "ngây thơ" bằng cách giả định thời gian đầu vào là UTC.
-    // Ví dụ: '08:00' ở 'America/New_York' được tạo tạm thời thành 08:00 UTC.
     const naiveDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
 
-    // Bước 2: Tính toán chênh lệch (offset) giữa múi giờ đích và UTC tại đúng thời điểm đó.
-    // `Intl.DateTimeFormat` nhận biết được Giờ mùa hè.
     const formatter = new Intl.DateTimeFormat('en-US', {
         timeZone: timeZone,
         year: 'numeric', month: 'numeric', day: 'numeric',
@@ -54,22 +34,17 @@ function parseDateTimeInTimezone(dateString, timeString, timeZone) {
     const parts = formatter.formatToParts(naiveDate);
     const partsMap = new Map(parts.map(p => [p.type, p.value]));
 
-    // Tạo một thời điểm UTC từ các phần "giờ địa phương" của múi giờ nguồn.
     const localTimeAsUTC = Date.UTC(
         partsMap.get('year'), partsMap.get('month') - 1, partsMap.get('day'),
         partsMap.get('hour') === '24' ? 0 : partsMap.get('hour'),
         partsMap.get('minute'), partsMap.get('second')
     );
 
-    // Chênh lệch là sự khác biệt giữa thời gian địa phương và thời gian UTC ban đầu của chúng ta.
     const offset = localTimeAsUTC - naiveDate.getTime();
 
-    // Bước 3: Áp dụng chênh lệch vào thời gian "ngây thơ" của chúng ta để có được dấu thời gian UTC chính xác.
-    // Dấu thời gian thực = Dấu thời gian "ngây thơ" (coi như UTC) - chênh lệch
     return new Date(naiveDate.getTime() - offset);
 }
 
-/** Lấy tên hiển thị thân thiện cho múi giờ */
 const getTimezoneDisplayName = (tz) => {
     const timezoneNames = {
         'UTC': 'UTC',
@@ -92,7 +67,7 @@ const getTimezoneDisplayName = (tz) => {
 function updateCurrentClock() {
     const now = new Date();
     const options = {
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Múi giờ của trình duyệt
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, 
         year: 'numeric', month: '2-digit', day: '2-digit',
         hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
     };
@@ -130,22 +105,18 @@ function convertTimeRange() {
 
     if (!date || !startTime || !endTime) return;
 
-    // 1. Phân tích thành các đối tượng Date chính xác
     let startDate = parseDateTimeInTimezone(date, startTime, fromTz);
     let endDate = parseDateTimeInTimezone(date, endTime, fromTz);
 
-    // Xử lý trường hợp khoảng thời gian qua nửa đêm (ví dụ: 22:00 - 02:00)
     if (endDate < startDate) {
         endDate.setDate(endDate.getDate() + 1);
     }
 
-    // 2. Cập nhật hiển thị nguồn
     rangeSourceDisplayEl.innerHTML = `
             <div>${startTime} - ${endTime}</div>
             <div style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">${new Date(date + 'T00:00').toLocaleDateString('vi-VN')} (${getTimezoneDisplayName(fromTz)})</div>
         `;
 
-    // 3. Định dạng kết quả đã chuyển đổi
     const timeFormat = { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' };
     const convertedStartTime = startDate.toLocaleTimeString('en-GB', { ...timeFormat, timeZone: toTz });
     const convertedEndTime = endDate.toLocaleTimeString('en-GB', { ...timeFormat, timeZone: toTz });
@@ -163,14 +134,11 @@ function convertTimeRange() {
             <div style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">${displayDateStr} (${getTimezoneDisplayName(toTz)})</div>
         `;
 
-    // 4. Tính toán và hiển thị thời lượng
     const durationMs = endDate.getTime() - startDate.getTime();
     const durationHours = Math.floor(durationMs / 3600000);
     const durationMinutes = Math.floor((durationMs % 3600000) / 60000);
     durationInfoEl.textContent = `Thời lượng: ${durationHours} giờ ${durationMinutes} phút`;
 
-    // 5. Tính toán chênh lệch múi giờ
-    // So sánh chênh lệch của mỗi múi giờ so với UTC
     const dateForOffset = parseDateTimeInTimezone(date, '00:00', 'UTC');
     const fromOffset = (parseDateTimeInTimezone(date, '00:00', fromTz).getTime() - dateForOffset.getTime()) / 3600000;
     const toOffset = (parseDateTimeInTimezone(date, '00:00', toTz).getTime() - dateForOffset.getTime()) / 3600000;
@@ -192,7 +160,7 @@ function updateFormats(date, timezone) {
         { label: '12 giờ (AM/PM)', value: date.toLocaleString('en-US', { timeZone: timezone, year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) },
         { label: 'Đầy đủ (Việt Nam)', value: date.toLocaleString('vi-VN', { timeZone: timezone, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) },
         { label: 'Chỉ ngày (vi-VN)', value: date.toLocaleDateString('vi-VN', { timeZone: timezone }) },
-        { label: 'RFC 2822', value: date.toUTCString() } // UTC string is universal
+        { label: 'RFC 2822', value: date.toUTCString() } 
     ];
 
     formatGridEl.innerHTML = '';
@@ -204,13 +172,10 @@ function updateFormats(date, timezone) {
     });
 }
 
-// === KHỞI TẠO VÀ GẮN SỰ KIỆN ===
 function init() {
-    // Cập nhật đồng hồ mỗi giây
     updateCurrentClock();
     setInterval(updateCurrentClock, 1000);
 
-    // Đặt giá trị mặc định cho các trường input
     const now = new Date();
     const year = now.getFullYear();
     const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -221,17 +186,14 @@ function init() {
     sourceTimeEl.value = `${year}-${month}-${day}T${hours}:${minutes}`;
     rangeDateEl.value = `${year}-${month}-${day}`;
 
-    // Thiết lập múi giờ mặc định
     fromTimezoneEl.value = 'UTC';
     toTimezoneEl.value = 'Asia/Ho_Chi_Minh';
     rangeFromTimezoneEl.value = 'UTC';
     rangeToTimezoneEl.value = 'Asia/Ho_Chi_Minh';
 
-    // Thực hiện chuyển đổi lần đầu
     convertTime();
     convertTimeRange();
 
-    // Gắn các sự kiện 'change' để tự động cập nhật
     const allInputs = [
         sourceTimeEl, fromTimezoneEl, toTimezoneEl,
         startTimeEl, endTimeEl, rangeDateEl, rangeFromTimezoneEl, rangeToTimezoneEl
