@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyển đổi thời gian</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 Chuyển đổi thời gian</h1>
+        
+        <div class="current-time">
+            <h2>Thời gian hiện tại</h2>
+            <div class="digital-clock" id="currentClock"></div>
+        </div>
+
+        <!-- Chuyển đổi thời gian đơn lẻ -->
+        <div class="converter-section">
+            <div class="time-zone-card">
+                <div class="card-title">Từ múi giờ</div>
+                <select id="fromTimezone">
+                    <option value="UTC">UTC (GMT+0)</option>
+                    <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                    <option value="America/New_York">New York (GMT-5/-4)</option>
+                    <option value="Europe/London">London (GMT+0/+1)</option>
+                    <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+                    <option value="Australia/Sydney">Sydney (GMT+10/+11)</option>
+                    <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                    <option value="Asia/Shanghai">Thượng Hải (GMT+8)</option>
+                    <option value="America/Los_Angeles">Los Angeles (GMT-8/-7)</option>
+                    <option value="Europe/Moscow">Moscow (GMT+3)</option>
+                    <option value="Asia/Dubai">Dubai (GMT+4)</option>
+                </select>
+                <input type="datetime-local" id="sourceTime">
+                <div class="time-display" id="sourceDisplay"></div>
+            </div>
+
+            <div class="time-zone-card">
+                <div class="card-title">Đến múi giờ</div>
+                <select id="toTimezone">
+                    <option value="America/New_York">New York (GMT-5/-4)</option>
+                    <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                    <option value="UTC">UTC (GMT+0)</option>
+                    <option value="Europe/London">London (GMT+0/+1)</option>
+                    <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+                    <option value="Australia/Sydney">Sydney (GMT+10/+11)</option>
+                    <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                    <option value="Asia/Shanghai">Thượng Hải (GMT+8)</option>
+                    <option value="America/Los_Angeles">Los Angeles (GMT-8/-7)</option>
+                    <option value="Europe/Moscow">Moscow (GMT+3)</option>
+                    <option value="Asia/Dubai">Dubai (GMT+4)</option>
+                </select>
+                <div class="time-display" id="convertedDisplay"></div>
+            </div>
+        </div>
+
+        <!-- Chuyển đổi khoảng thời gian -->
+        <div class="format-section" style="background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%); color: white;">
+            <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">⏰ Chuyển đổi khoảng thời gian</h3>
+            
+            <div class="converter-section" style="margin-bottom: 0;">
+                <div class="time-zone-card" style="background: rgba(255,255,255,0.95);">
+                    <div class="card-title">Múi giờ nguồn</div>
+                    <select id="rangeFromTimezone">
+                        <option value="UTC">UTC (GMT+0)</option>
+                        <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                        <option value="America/New_York">New York (GMT-5/-4)</option>
+                        <option value="Europe/London">London (GMT+0/+1)</option>
+                        <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+                        <option value="Australia/Sydney">Sydney (GMT+10/+11)</option>
+                        <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                        <option value="Asia/Shanghai">Thượng Hải (GMT+8)</option>
+                        <option value="America/Los_Angeles">Los Angeles (GMT-8/-7)</option>
+                        <option value="Europe/Moscow">Moscow (GMT+3)</option>
+                        <option value="Asia/Dubai">Dubai (GMT+4)</option>
+                    </select>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 15px;">
+                        <input type="time" id="startTime" value="08:00" style="margin-bottom: 0;">
+                        <span style="font-weight: bold; color: #666;">đến</span>
+                        <input type="time" id="endTime" value="11:00" style="margin-bottom: 0;">
+                    </div>
+                    
+                    <input type="date" id="rangeDate" style="margin-bottom: 15px;">
+                    
+                    <div class="time-display" id="rangeSourceDisplay" style="background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);">
+                        08:00 - 11:00 UTC
+                    </div>
+                </div>
+
+                <div class="time-zone-card" style="background: rgba(255,255,255,0.95);">
+                    <div class="card-title">Múi giờ đích</div>
+                    <select id="rangeToTimezone">
+                        <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                        <option value="America/New_York">New York (GMT-5/-4)</option>
+                        <option value="UTC">UTC (GMT+0)</option>
+                        <option value="Europe/London">London (GMT+0/+1)</option>
+                        <option value="Asia/Tokyo">Tokyo (GMT+9)</option>
+                        <option value="Australia/Sydney">Sydney (GMT+10/+11)</option>
+                        <option value="Europe/Paris">Paris (GMT+1/+2)</option>
+                        <option value="Asia/Shanghai">Thượng Hải (GMT+8)</option>
+                        <option value="America/Los_Angeles">Los Angeles (GMT-8/-7)</option>
+                        <option value="Europe/Moscow">Moscow (GMT+3)</option>
+                        <option value="Asia/Dubai">Dubai (GMT+4)</option>
+                    </select>
+                    
+                    <div class="time-display" id="rangeConvertedDisplay" style="background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%); min-height: 70px; display: flex; align-items: center; justify-content: center;">
+                        15:00 - 18:00 Việt Nam
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255,255,255,0.8); border-radius: 8px; font-size: 0.9em; color: #666;">
+                        <div id="durationInfo">Thời lượng: 3 giờ</div>
+                        <div id="timeDifferenceInfo">Chênh lệch múi giờ: +7 giờ</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="format-section">
+            <h3>📅 Các định dạng thời gian khác</h3>
+            <div class="format-grid" id="formatGrid"></div>
+        </div>
+    </div>
+<script src="main.js"></script>
+</body>
+</html>
